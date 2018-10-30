@@ -94,7 +94,7 @@ function print(pk, address, balance){
 	} 
 	
 	var t = document.getElementById(table).innerHTML.split("</th></tr>");
-	document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"'>"+address+"</td><td>"+balance+"</td></tr>" + t[1];
+	document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td>"+balance+"</td></tr>" + t[1];
 	
 }
 
