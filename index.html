@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="main.css">
+        <script src="browser_tron.js"></script>
+        
+        <title>TRX BRUTE</title>
+    </head>
+    <body> 
+        <div id="info" style="color: red;"></div>
+        
+        <input id="start" placeholder="Input private key in HEX to start brute" />
+        
+        <div style="background: #454545; padding: .5em 5px;">
+            <a class="button" onclick="stop(false); generatePK(document.getElementById('start').value.toUpperCase());">Start</a>
+            <a class="button" onclick="stop(true);">Stop</a>
+        </div>
+        
+        <div>
+            <table id="table_success" class="table_blur"><tr><th>Private Key</th><th>Address</th><th>Balance</th></tr><tr id="no_addresses"><td colspan="3"><center>No used addresses found</center></td><tr></table>
+        </div>
+        <div>
+            <table id="table" class="table_dark"><tr><th>Private Key</th><th>Address</th><th>Balance</th></tr></table>
+        </div>
+    </body>
+</html>

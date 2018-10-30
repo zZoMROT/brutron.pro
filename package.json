@@ -1,0 +1,24 @@
+{
+  "name": "brutron.pro",
+  "version": "1.0.0",
+  "description": "website",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zZoMROT/brutron.pro.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zZoMROT/brutron.pro/issues"
+  },
+  "homepage": "https://github.com/zZoMROT/brutron.pro#readme",
+  "dependencies": {
+    "browserify": "^16.2.3",
+    "btoa": "^1.2.1",
+    "js-sha3": "^0.8.0"
+  }
+}
