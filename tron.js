@@ -39,7 +39,7 @@ function doRequest(url, address, pk) {
 
 var alphabet = "0123456789ABCDEF";	
 function upStart(start, index = 1){
-	if(start[start.length-1-index] < alphabet.indexOf("F")){
+	if(alphabet.indexOf(start[start.length-1-index]) < alphabet.indexOf("F")){
 		start = start.slice(0, -1-index) + alphabet[ alphabet.indexOf(start[start.length-1-index])+1 ];
 		for(var i = 0; i < index; i++)
 			start += alphabet[0];
