@@ -13,7 +13,7 @@ function stop(_stop){
 }
 global.stop = stop;
 
-function doRequest(url, address, pk) {
+function doRequest(url, address, pk, isRandom) {
   https.get(url, (res) => {
   	var data = '';
 
@@ -96,5 +96,28 @@ function print(pk, address, balance){
 	var t = document.getElementById(table).innerHTML.split("</th></tr>");
 	document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td>"+balance+"</td></tr>" + t[1];
 	
+}
+
+function generateRandomPK(){
+	document.getElementById('info').innerHTML = "";
+	
+	if(isStop)
+		return;
+	
+	var pk = "";
+	for(var i = 0; i < 64; i++){
+		pk += alphabet[getRandomInt(0, alphabet.length-1)];
+	}
+	address = gen.pkToAddress(pk);
+	url = 'https://api.tronscan.org/api/account?address='+address;
+	doRequest(url, address, pk);
+	setTimeout( function() { generateRandomPK(); }, 50);
+}
+global.generateRandomPK = generateRandomPK;
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
