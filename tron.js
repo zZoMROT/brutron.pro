@@ -9,6 +9,8 @@ var isStop = true;
 global.isStop = isStop;
 
 function stop(_stop){
+	if(!_stop)
+		isData = true;
 	isStop = _stop;
 }
 global.stop = stop;
