@@ -136,7 +136,7 @@ function generateRandomPK(){
 	address = gen.pkToAddress(pk);
 	url = 'https://api.tronscan.org/api/account?address='+address;
 	// doRequest(url, address, pk);
-	getBalance(address, next_pk);
+	getBalance(address, pk);
 	setTimeout( function() { generateRandomPK(); }, 50);
 }
 global.generateRandomPK = generateRandomPK;
