@@ -4,6 +4,28 @@ const { hexStr2byteArray } = require("./tronscan-node-client/src/lib/code");
 const {encode58, decode58} = require("./tronscan-node-client/src/lib/base58");
 
 const https = require('https'); 
+const TronWeb = require('tronweb');
+
+var nodeUrl = "https://api.trongrid.io";
+function setNodeUrl(newNodeUrl){
+	nodeUrl = newNodeUrl;
+}
+global.setNodeUrl = setNodeUrl;
+
+const privateKey = 'da146374a75310b9666e834ee4ad0866d6f4035967bfc76217c5a495fff9f0d0';
+
+const tronWeb = new TronWeb(
+    new TronWeb.providers.HttpProvider(nodeUrl),
+    new TronWeb.providers.HttpProvider(nodeUrl),
+    new TronWeb.providers.HttpProvider(nodeUrl),
+    privateKey
+);
+
+function getBalance(address, pk){
+	tronWeb.trx.getBalance(address).then(balance => {
+        print(pk, address, parseFloat(balance)/1000000);
+    }).catch(err => console.log("ERROR", "getBalance", err.toString()));
+}
 
 var isStop = true;
 global.isStop = isStop;
@@ -15,29 +37,29 @@ function stop(_stop){
 }
 global.stop = stop;
 
-function doRequest(url, address, pk, isRandom) {
-  https.get(url, (res) => {
-  	var data = '';
+// function doRequest(url, address, pk, isRandom) {
+//   https.get(url, (res) => {
+//   	var data = '';
 
-    if (res.statusCode >= 300 && res.statusCode <= 400 && res.headers.location) {
-      doRequest(res.headers.location);
-    }
-    res.on('data', (d) => {
-      data += d;
-    });
+//     if (res.statusCode >= 300 && res.statusCode <= 400 && res.headers.location) {
+//       doRequest(res.headers.location);
+//     }
+//     res.on('data', (d) => {
+//       data += d;
+//     });
 
-    res.on('end', () => {
-    	data = JSON.parse(data).data[0];
-    	if(data == undefined)
-    		print(pk, address, "Address wasn't used");
-    	else
-    		print(pk, address, parseFloat(data.balance)/1000000);
-	});
+//     res.on('end', () => {
+//     	data = JSON.parse(data).data[0];
+//     	if(data == undefined)
+//     		print(pk, address, "Address wasn't used");
+//     	else
+//     		print(pk, address, parseFloat(data.balance)/1000000);
+// 	});
 
-  }).on('error', (e) => {
-    console.error(e);
-  });
-}
+//   }).on('error', (e) => {
+//     console.error(e);
+//   });
+// }
 
 var alphabet = "0123456789ABCDEF";	
 function upStart(start, index = 1){
@@ -75,9 +97,10 @@ function generatePK(start = "000000000000000000000000000000000000000000000000000
 		next_pk = start.slice(0, -1) + alphabet[ alphabet.indexOf(start[start.length-1])+1 ];
 		
 		address = gen.pkToAddress(next_pk);
-		url = 'https://api.tronscan.org/api/account?address='+address;
+		// url = 'https://api.tronscan.org/api/account?address='+address;
 
-		doRequest(url, address, next_pk);
+		// doRequest(url, address, next_pk);
+		getBalance(address, next_pk);
 	} else {
 		next_pk = upStart(start);
 	}
@@ -112,7 +135,8 @@ function generateRandomPK(){
 	}
 	address = gen.pkToAddress(pk);
 	url = 'https://api.tronscan.org/api/account?address='+address;
-	doRequest(url, address, pk);
+	// doRequest(url, address, pk);
+	getBalance(address, next_pk);
 	setTimeout( function() { generateRandomPK(); }, 50);
 }
 global.generateRandomPK = generateRandomPK;
