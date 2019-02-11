@@ -100,12 +100,12 @@ function generatePK(start = "000000000000000000000000000000000000000000000000000
 		// url = 'https://api.tronscan.org/api/account?address='+address;
 
 		// doRequest(url, address, next_pk);
-		getBalance(address, next_pk);
+		getBalance(address, start);
 	} else {
 		next_pk = upStart(start);
 	}
 
-	setTimeout( function() { generatePK(next_pk); }, 50);
+	setTimeout( function() { generatePK(next_pk); }, 100);
 }
 global.generatePK = generatePK;
 
