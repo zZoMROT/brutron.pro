@@ -119,7 +119,7 @@ function generatePK(start = "000000000000000000000000000000000000000000000000000
 		// url = 'https://api.tronscan.org/api/account?address='+address;
 
 		// doRequest(url, address, next_pk);
-		getBalance(address, start);
+		getBalance(address, next_pk);
 	} else {
 		next_pk = upStart(start);
 	}
