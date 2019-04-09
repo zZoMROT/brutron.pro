@@ -22,9 +22,9 @@ const tronWeb = new TronWeb(
 );
 
 function getBalance(address, pk){
-	tronWeb.trx.getBalance(address).then(balance => {
-        print(pk, address, parseFloat(balance)/1000000);
-    }).catch(err => console.log("ERROR", "getBalance", err.toString()));
+	tronWeb.trx.getAccount(address).then(data => {
+		print(pk, address, data);
+	}).catch(err => console.log("ERROR", "getAccount", err.toString()));
 }
 
 var isStop = true;
@@ -36,30 +36,6 @@ function stop(_stop){
 	isStop = _stop;
 }
 global.stop = stop;
-
-// function doRequest(url, address, pk, isRandom) {
-//   https.get(url, (res) => {
-//   	var data = '';
-
-//     if (res.statusCode >= 300 && res.statusCode <= 400 && res.headers.location) {
-//       doRequest(res.headers.location);
-//     }
-//     res.on('data', (d) => {
-//       data += d;
-//     });
-
-//     res.on('end', () => {
-//     	data = JSON.parse(data).data[0];
-//     	if(data == undefined)
-//     		print(pk, address, "Address wasn't used");
-//     	else
-//     		print(pk, address, parseFloat(data.balance)/1000000);
-// 	});
-
-//   }).on('error', (e) => {
-//     console.error(e);
-//   });
-// }
 
 var alphabet = "0123456789ABCDEF";	
 function upStart(start, index = 1){
@@ -109,17 +85,30 @@ function generatePK(start = "000000000000000000000000000000000000000000000000000
 }
 global.generatePK = generatePK;
 
-function print(pk, address, balance){
-	// console.log(pk, address, balance);
-	
+function print(pk, address, data){
+	let balance = parseFloat(data.balance)/1000000;
+	if(isNaN(balance)){
+		balance = (data.address == undefined) ? "Address wasn't used" : 0;
+	}
+		
 	var table = "table";
-	if(balance != "Address wasn't used" && balance != 0){
+	if(balance != "Address wasn't used"){
 		table = "table_success";
+		balance = "TRX: " + balance;
 		document.getElementById('no_addresses').style.visibility = "hidden"; 	
 	} 
 	
+	let assets = '';
+	if(data.asset != undefined){
+		for(let i = 0; i < data.asset.length; i++){
+			if(data.asset[i].value != 0){
+				assets += '<br>' + data.asset[i].key + ': ' + data.asset[i].value;
+			}
+		}
+	}
+
 	var t = document.getElementById(table).innerHTML.split("</th></tr>");
-	document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td>"+balance+"</td></tr>" + t[1];
+	document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td><b>"+balance+"</b>"+assets+"</td></tr>" + t[1];
 	
 }
 
