@@ -52,8 +52,10 @@ function upStart(start, index = 1){
 function generatePK(start = "0000000000000000000000000000000000000000000000000000000000000000") {
 	document.getElementById('info').innerHTML = "";
 	
-	if(isStop)
+	if(isStop){
+		document.getElementById("start").value = start;
 		return;
+	}
 	
 	if(start == "")
 		start = "0000000000000000000000000000000000000000000000000000000000000000";
