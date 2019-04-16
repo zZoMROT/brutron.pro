@@ -22,11 +22,21 @@
             <a class="button" onclick="result();">Download Result</a>
         </div>
         
-        <div>
+        <div class="table">
             <table id="table_success" class="table_blur"><tr><th>Private Key</th><th>Address</th><th>Balance</th></tr><tr id="no_addresses"><td colspan="3"><center>No used addresses found</center></td><tr></table>
         </div>
-        <div>
+        <br>
+        <div class="table">
             <table id="table" class="table_dark"><tr><th>Private Key</th><th>Address</th><th>Balance</th></tr></table>
         </div>
     </body>
 </html>
+
+<script>
+    setInterval(function(){
+        let divTables = document.getElementsByClassName("table");
+        
+        divTables[0].setAttribute("style", "overflow: auto; max-height: " + (window.innerHeight*0.75)/2 + "px");
+        divTables[1].setAttribute("style", "overflow: auto; max-height: " + (window.innerHeight*0.75)/2 + "px");
+    }, 1000);
+</script>

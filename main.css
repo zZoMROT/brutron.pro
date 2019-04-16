@@ -125,3 +125,8 @@ input {
 table a {
   color: white !important;
 }
+
+.table {
+  overflow: auto;
+  max-height: 250px;
+}
