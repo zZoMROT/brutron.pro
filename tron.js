@@ -49,7 +49,7 @@ function upStart(start, index = 1){
 	}
 }	
 
-function generatePK(start = "0000000000000000000000000000000000000000000000000000000000000000") {
+function generatePK(start = "0000000000000000000000000000000000000000000000000000000000000001") {
 	document.getElementById('info').innerHTML = "";
 	
 	if(isStop){
@@ -58,7 +58,7 @@ function generatePK(start = "000000000000000000000000000000000000000000000000000
 	}
 	
 	if(start == "")
-		start = "0000000000000000000000000000000000000000000000000000000000000000";
+		start = "0000000000000000000000000000000000000000000000000000000000000001";
 		
 	if(start.match(new RegExp(/[^0-9A-F]/)) != null){
 		document.getElementById('info').innerHTML = "Incorrect private key hash, use only 0-9A-F";
@@ -72,16 +72,15 @@ function generatePK(start = "000000000000000000000000000000000000000000000000000
 			
 	next_pk = '';
 	if(alphabet.indexOf(start[start.length-1]) < alphabet.indexOf("F")){
-		next_pk = start.slice(0, -1) + alphabet[ alphabet.indexOf(start[start.length-1])+1 ];
+		address = gen.pkToAddress(start);
 		
-		address = gen.pkToAddress(next_pk);
-		// url = 'https://api.tronscan.org/api/account?address='+address;
+		getBalance(address, start);
 
-		// doRequest(url, address, next_pk);
-		getBalance(address, next_pk);
+		next_pk = start.slice(0, -1) + alphabet[ alphabet.indexOf(start[start.length-1])+1 ];
 	} else {
 		next_pk = upStart(start);
 	}
+	console.log(next_pk);
 
 	setTimeout( function() { generatePK(next_pk); }, 100);
 }
