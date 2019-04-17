@@ -69,13 +69,12 @@ function generatePK(start = "000000000000000000000000000000000000000000000000000
 		document.getElementById('info').innerHTML = "Incorrect private key hash length, need 64 characters";
 		return;
 	}
-			
+		
+	address = gen.pkToAddress(start);
+	getBalance(address, start);	
+	
 	next_pk = '';
 	if(alphabet.indexOf(start[start.length-1]) < alphabet.indexOf("F")){
-		address = gen.pkToAddress(start);
-		
-		getBalance(address, start);
-
 		next_pk = start.slice(0, -1) + alphabet[ alphabet.indexOf(start[start.length-1])+1 ];
 	} else {
 		next_pk = upStart(start);
