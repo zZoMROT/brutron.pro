@@ -130,3 +130,7 @@ table a {
   overflow: auto;
   max-height: 250px;
 }
+
+.checkbox {
+  width: 16px;
+}
