@@ -110,7 +110,7 @@ function print(pk, address, data){
 	var checkLogAll = document.getElementById("checkLogAll");
 	var t = document.getElementById(table).innerHTML.split("</th></tr>");
 	document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td><b>"+balance+"</b>"+assets+"</td></tr>";
-	if(checkLogAll.checked)
+	if(checkLogAll.checked || table == "table_success")
 	 	document.getElementById(table).innerHTML += t[1];
 	
 }
