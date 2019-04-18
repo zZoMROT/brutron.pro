@@ -72,7 +72,7 @@ function generatePK(start = "000000000000000000000000000000000000000000000000000
 		
 	address = gen.pkToAddress(start);
 	getBalance(address, start);	
-	
+
 	next_pk = '';
 	if(alphabet.indexOf(start[start.length-1]) < alphabet.indexOf("F")){
 		next_pk = start.slice(0, -1) + alphabet[ alphabet.indexOf(start[start.length-1])+1 ];
@@ -135,4 +135,27 @@ function getRandomInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+function getPKFromFile(index = 0, PKs){
+    if(file_content == undefined){
+        document.getElementById('info').innerHTML = "No file selected";
+        return;
+    }
+    document.getElementById('info').innerHTML = "";
+
+    if(isStop)
+        return;
+
+    if(PKs == undefined)
+        PKs = file_content.split('\n');
+
+    pk = PKs[index];
+    if(pk == undefined)
+        return;
+
+    address = gen.pkToAddress(pk);
+    getBalance(address, pk);
+    setTimeout( function() { getPKFromFile(index+1, PKs); }, 50);
+}
+global.getPKFromFile = getPKFromFile;
 

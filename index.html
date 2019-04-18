@@ -14,10 +14,12 @@
         
         <input id="nodeUrl" placeholder="https://api.trongrid.io" onchange="setNodeUrl(document.getElementById('nodeUrl').value)" />
         <input id="start" placeholder="Input private key in HEX to start brute" />
+        <input type="file" id="file-input" />
         
         <div style="background: #454545; padding: .5em 5px;">
             <a class="button" onclick="stop(false); generatePK(document.getElementById('start').value.toUpperCase());">Start</a>
             <a class="button" onclick="stop(false); generateRandomPK();">Start Random</a>
+            <a class="button" onclick="stop(false); getPKFromFile();">Start from File</a>
             <a class="button" onclick="stop(true);">Stop</a>
             <a class="button" onclick="result();">Download Result</a>
         </div>
@@ -33,6 +35,8 @@
 </html>
 
 <script>
+    document.getElementById('file-input').addEventListener('change', readSingleFile, false);
+
     setInterval(function(){
         let divTables = document.getElementsByClassName("table");
         

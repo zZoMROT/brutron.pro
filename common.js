@@ -57,3 +57,17 @@ function download(data, filename, type) {
         }, 0); 
     }
 }
+
+let file_content;
+function readSingleFile(e) {
+    var file = e.target.files[0];
+    if (!file) {
+        return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var contents = e.target.result;
+        file_content = contents;
+    };
+    reader.readAsText(file);
+}
