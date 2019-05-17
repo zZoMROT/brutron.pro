@@ -136,8 +136,9 @@ function updateTable(table, pk, address, balance, assets = '', assetV2 = ''){
 
 function checkTokens(tokens, assetV2 = '', index = 0){
 	return new Promise(ok => {
-		if(tokens[index] == undefined)
+		if(tokens[index] == undefined){
 			ok(assetV2);
+		}
 
 		if(tokens[index].value != 0){
 			tronWeb.trx.getTokenByID(tokens[index].key).then(data => {
@@ -156,8 +157,11 @@ function checkTokens(tokens, assetV2 = '', index = 0){
 					ok(result);
 				});
 			});
+		} else {
+			checkTokens(tokens, assetV2, index+1).then(result => {
+				ok(result);
+			});
 		}
-		ok();
 	});
 }
 
