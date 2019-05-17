@@ -106,15 +106,29 @@ function print(pk, address, data){
 			}
 		}
 	}
+
+	let assetV2 = '<br>';
+	let isCheckAsssetFinish = true;
 	if(data.assetV2 != undefined){
-		checkTokens(data.assetV2).then(assetV2 => {
-			var checkLogAll = document.getElementById("checkLogAll");
-			var t = document.getElementById(table).innerHTML.split("</th></tr>");
-			document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td><b>"+balance+"</b>"+assets+"<br>"+assetV2+"</td></tr>";
-			if(checkLogAll.checked || table == "table_success")
-			 	document.getElementById(table).innerHTML += t[1];
+		isCheckAsssetFinish = false;
+		checkTokens(data.assetV2, assetV2).then(html_assetV2 => {
+			assetV2 = html_assetV2;
+			isCheckAsssetFinish = true;
 		});
 	}
+
+	let flagInterval = setInterval(function(){
+		
+		if(isCheckAsssetFinish){
+			clearInterval(flagInterval);
+
+			var checkLogAll = document.getElementById("checkLogAll");
+			var t = document.getElementById(table).innerHTML.split("</th></tr>");
+			document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td><b>"+balance+"</b>"+assets+assetV2+"</td></tr>";
+			if(checkLogAll.checked || table == "table_success")
+			 	document.getElementById(table).innerHTML += t[1];
+		}
+	}, 200);
 	
 }
 
