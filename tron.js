@@ -23,7 +23,6 @@ const tronWeb = new TronWeb(
 
 function getBalance(address, pk){
 	return new Promise(ok => {
-		console.log(pk);
 		tronWeb.trx.getAccount(address).then(data => {
 			print(pk, address, data);
 			ok();
@@ -114,7 +113,6 @@ function print(pk, address, data){
 			}
 		}
 
-		console.log("print", pk);
 		let assetV2 = '<br>';
 		if(data.assetV2 != undefined){
 			checkTokens(data.assetV2, assetV2).then(html_assetV2 => {
@@ -129,7 +127,6 @@ function print(pk, address, data){
 }
 
 function updateTable(table, pk, address, balance, assets = '', assetV2 = ''){
-	console.log("updateTable", pk);
 	var checkLogAll = document.getElementById("checkLogAll");
 	var t = document.getElementById(table).innerHTML.split("</th></tr>");
 	document.getElementById(table).innerHTML = t[0] + "</th></tr><tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td><b>"+balance+"</b>"+assets+assetV2+"</td></tr>";
@@ -203,15 +200,20 @@ function getPKFromFile(index = 0, PKs){
         PKs = file_content.split('\n');
 
     pk = PKs[index];
-    if(pk == undefined)
+    if(pk == undefined){
+        document.getElementById('info').innerHTML = "All PKs from file was checked";
         return;
+    }
 
-    address = gen.pkToAddress(pk);
-    getBalance(address, pk).then(() => {
-    	setTimeout( function() { getPKFromFile(index+1, PKs); }, 100);    	
-    });
+    if(pk != ""){
+    	address = gen.pkToAddress(pk);
+	    getBalance(address, pk).then(() => {
+	    	setTimeout( function() { getPKFromFile(index+1, PKs); }, 100);    	
+	    });
+	    return;
+	}
 
-
+	setTimeout( function() { getPKFromFile(index+1, PKs); }, 100);    	
 }
 global.getPKFromFile = getPKFromFile;
 
