@@ -106,21 +106,37 @@ function print(pk, address, data){
 			}
 		}
 	}
-	let assetV2 = '';
 	if(data.assetV2 != undefined){
-		for(let i = 0; i < data.assetV2.length; i++){
-			if(data.assetV2[i].value != 0){
-				assetV2 += '<br>' + data.assetV2[i].key + ': ' + data.assetV2[i].value;
-			}
-		}
+		checkTokens(data.assetV2).then(assetV2 => {
+			var checkLogAll = document.getElementById("checkLogAll");
+			var t = document.getElementById(table).innerHTML.split("</th></tr>");
+			document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td><b>"+balance+"</b>"+assets+"<br>"+assetV2+"</td></tr>";
+			if(checkLogAll.checked || table == "table_success")
+			 	document.getElementById(table).innerHTML += t[1];
+		});
 	}
-
-	var checkLogAll = document.getElementById("checkLogAll");
-	var t = document.getElementById(table).innerHTML.split("</th></tr>");
-	document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td><b>"+balance+"</b>"+assets+"<br>"+assetV2+"</td></tr>";
-	if(checkLogAll.checked || table == "table_success")
-	 	document.getElementById(table).innerHTML += t[1];
 	
+}
+
+function checkTokens(tokens, assetV2 = '', index = 0){
+	return new Promise(ok => {
+		if(tokens[index] == undefined)
+			ok(assetV2);
+
+		if(tokens[index].value != 0){
+			tronWeb.trx.getTokenByID(tokens[index].key).then(data => {
+				let amount = tokens[index].value;
+				if(data.precision != undefined){
+					amount = amount / Math.pow(10, data.precision);
+				}
+
+				assetV2 += '<br>' + data.abbr + ' [' + tokens[index].key + ']: ' + amount;
+				checkTokens(tokens, assetV2, index+1).then(result => {
+					ok(result);
+				});
+			});
+		}
+	});
 }
 
 function generateRandomPK(){
