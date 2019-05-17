@@ -22,9 +22,16 @@ const tronWeb = new TronWeb(
 );
 
 function getBalance(address, pk){
-	tronWeb.trx.getAccount(address).then(data => {
-		print(pk, address, data);
-	}).catch(err => console.log("ERROR", "getAccount", err.toString()));
+	return new Promise(ok => {
+		console.log(pk);
+		tronWeb.trx.getAccount(address).then(data => {
+			print(pk, address, data);
+			ok();
+		}).catch(err => {
+			console.log("ERROR", "getAccount", err.toString())
+			ok();
+		});
+	});
 }
 
 var isStop = true;
@@ -71,66 +78,64 @@ function generatePK(start = "000000000000000000000000000000000000000000000000000
 	}
 		
 	address = gen.pkToAddress(start);
-	getBalance(address, start);	
-
-	next_pk = '';
-	if(alphabet.indexOf(start[start.length-1]) < alphabet.indexOf("F")){
-		next_pk = start.slice(0, -1) + alphabet[ alphabet.indexOf(start[start.length-1])+1 ];
-	} else {
-		next_pk = upStart(start);
-	}
-	console.log(next_pk);
-
-	setTimeout( function() { generatePK(next_pk); }, 100);
+	getBalance(address, start).then(() => {
+		next_pk = '';
+		if(alphabet.indexOf(start[start.length-1]) < alphabet.indexOf("F")){
+			next_pk = start.slice(0, -1) + alphabet[ alphabet.indexOf(start[start.length-1])+1 ];
+		} else {
+			next_pk = upStart(start);
+		}
+		
+		setTimeout( function() { generatePK(next_pk); }, 100);
+	});
 }
 global.generatePK = generatePK;
 
 function print(pk, address, data){
-	let balance = parseFloat(data.balance)/1000000;
-	if(isNaN(balance)){
-		balance = (data.address == undefined) ? "Address wasn't used" : 0;
-	}
+	return new Promise(ok => {
+		let balance = parseFloat(data.balance)/1000000;
+		if(isNaN(balance)){
+			balance = (data.address == undefined) ? "Address wasn't used" : 0;
+		}
+			
+		var table = "table";
+		if(balance != "Address wasn't used"){
+			table = "table_success";
+			balance = "TRX: " + balance;
+			document.getElementById('no_addresses').style.visibility = "hidden"; 	
+		} 
 		
-	var table = "table";
-	if(balance != "Address wasn't used"){
-		table = "table_success";
-		balance = "TRX: " + balance;
-		document.getElementById('no_addresses').style.visibility = "hidden"; 	
-	} 
-	
-	let assets = '';
-	if(data.asset != undefined){
-		for(let i = 0; i < data.asset.length; i++){
-			if(data.asset[i].value != 0){
-				assets += '<br>' + data.asset[i].key + ': ' + data.asset[i].value;
+		let assets = '';
+		if(data.asset != undefined){
+			for(let i = 0; i < data.asset.length; i++){
+				if(data.asset[i].value != 0){
+					assets += '<br>' + data.asset[i].key + ': ' + data.asset[i].value;
+				}
 			}
 		}
-	}
 
-	let assetV2 = '<br>';
-	let isCheckAsssetFinish = true;
-	if(data.assetV2 != undefined){
-		isCheckAsssetFinish = false;
-		checkTokens(data.assetV2, assetV2).then(html_assetV2 => {
-			assetV2 = html_assetV2;
-			isCheckAsssetFinish = true;
-		});
-	}
-
-	let flagInterval = setInterval(function(){
-		
-		if(isCheckAsssetFinish){
-			clearInterval(flagInterval);
-
-			var checkLogAll = document.getElementById("checkLogAll");
-			var t = document.getElementById(table).innerHTML.split("</th></tr>");
-			document.getElementById(table).innerHTML = t[0] + "<tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td><b>"+balance+"</b>"+assets+assetV2+"</td></tr>";
-			if(checkLogAll.checked || table == "table_success")
-			 	document.getElementById(table).innerHTML += t[1];
+		console.log("print", pk);
+		let assetV2 = '<br>';
+		if(data.assetV2 != undefined){
+			checkTokens(data.assetV2, assetV2).then(html_assetV2 => {
+				updateTable(table, pk, address, balance, assets, html_assetV2);
+				ok();
+			});
+		} else {
+			updateTable(table, pk, address, balance, assets);
+			ok();
 		}
-	}, 200);
-	
+	});
 }
+
+function updateTable(table, pk, address, balance, assets = '', assetV2 = ''){
+	console.log("updateTable", pk);
+	var checkLogAll = document.getElementById("checkLogAll");
+	var t = document.getElementById(table).innerHTML.split("</th></tr>");
+	document.getElementById(table).innerHTML = t[0] + "</th></tr><tr><td>"+pk+"</td><td><a href='https://tronscan.org/#/address/"+address+"' target='_blank'>"+address+"</td><td><b>"+balance+"</b>"+assets+assetV2+"</td></tr>";
+	if(checkLogAll.checked || table == "table_success")
+	 	document.getElementById(table).innerHTML += t[1];
+} 
 
 function checkTokens(tokens, assetV2 = '', index = 0){
 	return new Promise(ok => {
@@ -148,8 +153,14 @@ function checkTokens(tokens, assetV2 = '', index = 0){
 				checkTokens(tokens, assetV2, index+1).then(result => {
 					ok(result);
 				});
+			}).catch(error => {
+				console.log("ERROR", "getTokenByID", tokens[index].key);
+				checkTokens(tokens, assetV2, index+1).then(result => {
+					ok(result);
+				});
 			});
 		}
+		ok();
 	});
 }
 
@@ -166,8 +177,9 @@ function generateRandomPK(){
 	address = gen.pkToAddress(pk);
 	url = 'https://api.tronscan.org/api/account?address='+address;
 	// doRequest(url, address, pk);
-	getBalance(address, pk);
-	setTimeout( function() { generateRandomPK(); }, 50);
+	getBalance(address, pk).then(() => {
+		setTimeout( function() { generateRandomPK(); }, 100);
+	});
 }
 global.generateRandomPK = generateRandomPK;
 
@@ -195,8 +207,11 @@ function getPKFromFile(index = 0, PKs){
         return;
 
     address = gen.pkToAddress(pk);
-    getBalance(address, pk);
-    setTimeout( function() { getPKFromFile(index+1, PKs); }, 50);
+    getBalance(address, pk).then(() => {
+    	setTimeout( function() { getPKFromFile(index+1, PKs); }, 100);    	
+    });
+
+
 }
 global.getPKFromFile = getPKFromFile;
 
